@@ -1,21 +1,34 @@
-import {StatusBar} from 'expo-status-bar';
-import {StyleSheet, Text, View} from 'react-native';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {StackScreens} from '../../App';
-import {WebView as NativeWebView} from 'react-native-webview'
+import { StatusBar } from "expo-status-bar";
+import { View } from "react-native";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { StackScreens } from "../../App";
+import { WebView as NativeWebView } from "react-native-webview";
+import { Observer } from "mobx-react";
+import { AuthStore } from "../../store/auth";
+import { globalStyles } from "../../theme/styles";
 
-export default function WebView({}: NativeStackScreenProps<StackScreens, 'App'>) {
-  console.log('EXPO_PUBLIC_WEBAPP_ROOT=%s', process.env.EXPO_PUBLIC_WEBAPP_ROOT)
+export default function WebView({}: NativeStackScreenProps<
+  StackScreens,
+  "App"
+>) {
   return (
-    <View style={styles.container}>
-      <NativeWebView source={{uri: process.env.EXPO_PUBLIC_WEBAPP_ROOT as string}} />
+    <View style={globalStyles.container}>
+      {/* Using MobX Observer to observe changes in the session token */}
+      <Observer>
+        {() => (
+          <NativeWebView
+            sharedCookiesEnabled={true}
+            source={{
+              uri: "http://localhost:3000",
+              headers: {
+                // Setting the 'SESSION_TOKEN' cookie in the request headers
+                Cookie: `SESSION_TOKEN=${AuthStore.token}`,
+              },
+            }}
+          />
+        )}
+      </Observer>
       <StatusBar style="auto" />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

@@ -18,7 +18,6 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     })
       .then(r => r.json())
       .catch(e => console.error('Failed to fetch auth state during SSR!', e));
-
     if (process.env.NODE_ENV !== 'production') {
       console.debug('authRes,', authRes)
     }
@@ -69,6 +68,7 @@ export default function Home({
           User Profile
         </h1>
         <div className="p-4">
+      
           <p className="text-neutral-500">{`How ya goin, ${sess?.displayName || sess?.username || 'stranger'}?`}</p>
         </div>
       </main>
